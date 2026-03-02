@@ -19,12 +19,12 @@
     <header class="text-center mb-6">
         <div class="text-4xl font-black italic text-yellow-500 uppercase tracking-tighter">GADA GRUP</div>
         <div class="h-1 w-20 bg-yellow-600 mx-auto mt-1 rounded-full"></div>
-        <div id="sync-status" class="text-[9px] text-green-500 mt-2 font-bold"><span class="live-indicator"></span>סנכרון פעיל...</div>
+        <div id="sync-status" class="text-[9px] text-green-500 mt-2 font-bold"><span class="live-indicator"></span>סנכרון פעיל (כל דקה)</div>
     </header>
 
     <div id="fleet-list"></div>
 
-    <footer class="text-[9px] color-[#475569] text-center mt-6 border-t border-white/5 pt-4 opacity-50">
+    <footer class="text-[9px] text-slate-600 text-center mt-6 border-t border-white/5 pt-4 opacity-50">
         © 2026 Gada Group | כל הזכויות שמורות לסטס זולין
     </footer>
 
@@ -47,14 +47,13 @@
             let html = '';
 
             staticFleet.forEach(v => {
-                // חיפוש חכם יותר שמתעלם ממקפים ורווחים
                 const vPlate = v.plate.replace(/\D/g,'');
                 const report = reports.slice().reverse().find(r => {
-                    const rPlate = String(r.car_number || r.car_plate || '').replace(/\D/g,'');
+                    const rPlate = String(r.car_number || '').replace(/\D/g,'');
                     return rPlate === vPlate;
                 });
 
-                const currentKm = report ? Number(report.km || report.קילומטראז || 0) : 0;
+                const currentKm = report ? Number(report.km || 0) : 0;
                 let nextSrv = Math.ceil((currentKm + 1) / v.interval) * v.interval;
                 if (currentKm === 0) nextSrv = v.interval;
                 let srvTxt = nextSrv.toLocaleString();
@@ -67,13 +66,13 @@
                                 <h3 class="font-bold text-white text-base leading-tight">${v.name}</h3>
                                 <p class="text-[9px] text-slate-500 font-mono tracking-tighter">${v.plate}</p>
                             </div>
-                            ${currentKm > 0 ? `<div class="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-md font-black italic">${currentKm.toLocaleString()}</div>` : ''}
+                            ${currentKm > 0 ? `<div class="bg-blue-500/20 text-blue-400 text-[10px] px-2 py-0.5 rounded-md font-black italic shadow-[0_0_10px_rgba(59,130,246,0.3)]">${currentKm.toLocaleString()}</div>` : ''}
                         </div>
                         <div class="data-row">
-                            <div><p class="lbl">ק"מ יעד</p><p class="val text-blue-300">${currentKm > 0 ? currentKm.toLocaleString() : '---'}</p></div>
+                            <div><p class="lbl">ק"מ עדכני</p><p class="val text-blue-300 font-black">${currentKm > 0 ? currentKm.toLocaleString() : '---'}</p></div>
                             <div><p class="lbl">טסט</p><p class="val">${v.test}</p></div>
                             <div><p class="lbl">ביטוח</p><p class="val">${v.ins}</p></div>
-                            <div><p class="lbl">טיפול</p><p class="val text-green-400">${srvTxt}</p></div>
+                            <div><p class="lbl">טיפול הבא</p><p class="val text-green-400 font-bold">${srvTxt}</p></div>
                         </div>
                     </div>`;
             });
@@ -82,19 +81,18 @@
 
         async function sync() {
             try {
-                // משיכה עם ביטול מטמון (Cache busting)
                 const res = await fetch(`https://sheetdb.io/api/v1/yzlhwfcvmfebt?t=${Date.now()}`);
                 const data = await res.json();
                 if (Array.isArray(data)) render(data);
-                document.getElementById('sync-status').innerHTML = '<span class="live-indicator"></span>מחובר בזמן אמת';
+                document.getElementById('sync-status').innerHTML = '<span class="live-indicator"></span>סנכרון פעיל (כל דקה)';
             } catch (e) {
                 document.getElementById('sync-status').innerHTML = '<span class="live-indicator bg-red-500 animate-none"></span>שגיאת חיבור';
             }
         }
 
-        render(); // תצוגה ראשונית
-        sync();   // סנכרון ראשון
-        setInterval(sync, 60000); // כל דקה
+        render();
+        sync();
+        setInterval(sync, 60000);
     </script>
 </body>
 </html>
