@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gada Group - Control Panel</title>
+    <title>Gada Group - Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #020617; color: #f1f5f9; font-family: system-ui, sans-serif; margin: 0; padding: 10px; }
-        .card { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; margin-bottom: 12px; padding: 15px; }
-        .grid-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; margin-top: 10px; }
-        .label { color: #94a3b8; font-size: 10px; text-align: center; margin-bottom: 4px; }
-        .val { color: #f8fafc; font-size: 11px; font-weight: bold; text-align: center; white-space: nowrap; }
-        .danger { border-right: 5px solid #ef4444; }
+        body { background: #020617; color: #f1f5f9; font-family: system-ui, sans-serif; padding: 10px; }
+        .card { background: rgba(30, 41, 59, 0.8); border-radius: 1rem; margin-bottom: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .data-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; margin-top: 10px; }
+        .lbl { color: #94a3b8; font-size: 9px; text-align: center; margin-bottom: 2px; text-transform: uppercase; }
+        .val { color: #fff; font-size: 11px; font-weight: bold; text-align: center; white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -20,12 +19,11 @@
         <div class="h-1 w-20 bg-yellow-600 mx-auto mt-1 rounded-full"></div>
     </header>
 
-    <div id="fleet-container">
-        <p class="text-center text-slate-500 animate-pulse">טוען נתונים...</p>
+    <div id="fleet-list">
+        <p class="text-center text-slate-500 animate-pulse mt-10 text-sm">מעדכן נתונים מהשטח...</p>
     </div>
 
     <script>
-        // הנתונים שלך - מעודכנים להיום
         const staticFleet = [
             { name: "משאית איסוזו סומו", plate: "401-31-703", test: "01.12.26", ins: "01.12.26", interval: 25000 },
             { name: "יונדאי (פרנסואה)", plate: "887-91-401", test: "15.01.27", ins: "01.01.27", interval: 15000 },
@@ -39,39 +37,46 @@
             { name: "MG (איציק)", plate: "874-99-903", test: "05.08.26", ins: "31.07.26", interval: 15000 }
         ];
 
-        async function loadData() {
+        async function updateView() {
             try {
                 const res = await fetch('https://sheetdb.io/api/v1/yzlhwfcvmfebt');
                 const reports = await res.json();
-                const container = document.getElementById('fleet-container');
-                container.innerHTML = '';
+                const list = document.getElementById('fleet-list');
+                list.innerHTML = '';
 
                 staticFleet.forEach(v => {
                     const last = reports.filter(r => r.car_number.replace(/-/g,'') === v.plate.replace(/-/g,'')).pop();
                     const currentKm = last ? Number(last.km) : 0;
                     
-                    // חישוב טיפול
                     let nextSrv = Math.ceil((currentKm + 1) / v.interval) * v.interval;
                     if (currentKm === 0) nextSrv = v.interval;
-                    let srvLabel = nextSrv.toLocaleString();
-                    if (v.type === "renault") srvLabel += (nextSrv/15000)%2===0 ? " (גד)" : " (קט)";
+                    let srvTxt = nextSrv.toLocaleString();
+                    if (v.type === "renault") srvTxt += (nextSrv/15000)%2===0 ? " (גד)" : " (קט)";
 
-                    const div = document.createElement('div');
-                    div.className = `card ${v.test.includes('.04') ? 'danger' : ''}`;
-                    div.innerHTML = `
-                        <div class="flex justify-between items-center mb-2">
+                    const card = document.createElement('div');
+                    card.className = `card ${v.test.includes('.04.26') ? 'border-r-4 border-red-500' : ''}`;
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center px-1">
                             <div class="text-right">
-                                <h3 class="font-bold text-white text-base">${v.name}</h3>
-                                <p class="text-[10px] text-slate-500 font-mono">${v.plate}</p>
+                                <h3 class="font-bold text-white text-base leading-tight">${v.name}</h3>
+                                <p class="text-[9px] text-slate-500 font-mono tracking-tighter">${v.plate}</p>
                             </div>
-                            <button onclick="alert('לעריכה: שנה את התאריך בקוד ב-GitHub')" class="text-[10px] bg-white/10 px-3 py-1 rounded-full text-slate-400">ערוך</button>
                         </div>
-                        <div class="grid-row">
-                            <div><p class="label">ק"מ</p><p class="val text-blue-400">${currentKm > 0 ? currentKm.toLocaleString() : '---'}</p></div>
-                            <div><p class="label">טסט</p><p class="val">${v.test}</p></div>
-                            <div><p class="label">ביטוח</p><p class="val">${v.ins}</p></div>
-                            <div><p class="label">טיפול</p><p class="val text-green-400">${srvLabel}</p></div>
+                        <div class="data-row">
+                            <div><p class="lbl">ק"מ</p><p class="val text-blue-400 font-black">${currentKm > 0 ? currentKm.toLocaleString() : '---'}</p></div>
+                            <div><p class="lbl">טסט</p><p class="val text-slate-200">${v.test}</p></div>
+                            <div><p class="lbl">ביטוח</p><p class="val text-slate-200">${v.ins}</p></div>
+                            <div><p class="lbl">טיפול</p><p class="val text-green-400">${srvTxt}</p></div>
                         </div>
                     `;
-                    container.
-                        
+                    list.appendChild(card);
+                });
+            } catch (e) {
+                document.getElementById('fleet-list').innerHTML = '<p class="text-center text-red-500 mt-10">שגיאת חיבור לנתונים</p>';
+            }
+        }
+        updateView();
+        setInterval(updateView, 60000);
+    </script>
+</body>
+</html>
