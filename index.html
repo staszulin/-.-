@@ -6,27 +6,18 @@
     <title>דיווח נהג - גדא י.קרן בע"מ</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-white p-4 md:p-8 text-right">
+<body class="bg-slate-900 text-white p-4 text-right">
     <div class="max-w-md mx-auto bg-slate-800 p-6 rounded-3xl border-2 border-yellow-600 shadow-2xl text-center">
-        <img src="1000304741.jpg" alt="Gada Group Logo" class="mx-auto h-24 mb-4 rounded-lg shadow-md">
+        <img src="https://raw.githubusercontent.com/staszulin/Gada-grup/main/1000304741.jpg" alt="Gada Group Logo" class="mx-auto h-28 mb-4 rounded-xl shadow-lg border border-yellow-600/30">
         
-        <h1 class="text-2xl font-bold text-yellow-500 mb-2">גדא י.קרן בע"מ</h1>
-        <p class="text-slate-400 mb-6">דיווח קילומטראז' שבועי</p>
+        <h1 class="text-2xl font-bold text-yellow-500 mb-2 font-serif">גדא י.קרן בע"מ</h1>
+        <p class="text-slate-400 mb-6 font-bold text-sm">דיווח קילומטראז' שבועי</p>
 
-        <form id="driverForm" class="space-y-4 text-right">
-            <div>
-                <label class="block text-sm mb-1 mr-1">שם הנהג</label>
-                <input type="text" name="driver_name" required class="w-full p-3 rounded-xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right">
-            </div>
-            <div>
-                <label class="block text-sm mb-1 mr-1">מספר רכב</label>
-                <input type="text" name="car_number" required class="w-full p-3 rounded-xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right">
-            </div>
-            <div>
-                <label class="block text-sm mb-1 mr-1">קילומטראז' עדכני</label>
-                <input type="number" name="km" required class="w-full p-3 rounded-xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right">
-            </div>
-            <button type="submit" class="w-full bg-yellow-600 text-black font-extrabold py-4 rounded-2xl hover:bg-yellow-500 transition-all shadow-lg text-lg">שלח דיווח לסטס</button>
+        <form class="space-y-4 text-right">
+            <div><label class="block text-xs mb-1 mr-1 text-slate-300">שם הנהג</label><input type="text" class="w-full p-3 rounded-xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right"></div>
+            <div><label class="block text-xs mb-1 mr-1 text-slate-300">מספר רכב</label><input type="text" class="w-full p-3 rounded-xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right"></div>
+            <div><label class="block text-xs mb-1 mr-1 text-slate-300">קילומטראז' עדכני</label><input type="number" class="w-full p-3 rounded-xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right"></div>
+            <button type="button" class="w-full bg-yellow-600 text-black font-extrabold py-4 rounded-2xl hover:bg-yellow-500 transition-all text-lg shadow-xl">שלח דיווח לסטס</button>
         </form>
     </div>
 </body>
