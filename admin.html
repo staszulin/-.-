@@ -8,27 +8,27 @@
     <style>
         body { 
             background: #020617; color: #f1f5f9; font-family: system-ui, sans-serif; padding: 10px; 
-            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; /* חוסם העתקת טקסט */
+            -webkit-user-select: none; user-select: none; 
         }
         .card { background: rgba(30, 41, 59, 0.8); border-radius: 1rem; margin-bottom: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); }
-        .data-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; margin-top: 10px; }
+        .data-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 12px; margin-top: 10px; }
         .lbl { color: #94a3b8; font-size: 9px; text-align: center; margin-bottom: 2px; }
         .val { color: #fff; font-size: 10px; font-weight: bold; text-align: center; white-space: nowrap; }
         footer { font-size: 10px; color: #475569; text-align: center; margin-top: 20px; padding-bottom: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
     </style>
 </head>
-<body oncontextmenu="return false;"> <header class="text-center mb-6">
+<body oncontextmenu="return false;">
+    <header class="text-center mb-6">
         <div class="text-4xl font-black italic text-yellow-500 uppercase tracking-tighter">GADA GRUP</div>
-        <div class="h-1 w-20 bg-yellow-600 mx-auto mt-1 rounded-full shadow-lg shadow-yellow-500/20"></div>
+        <div class="h-1 w-20 bg-yellow-600 mx-auto mt-1 rounded-full"></div>
     </header>
 
     <div id="fleet-list">
-        <p class="text-center text-slate-500 animate-pulse mt-10">מסנכרן נתונים מאובטחים...</p>
-    </div>
+        </div>
 
     <footer>
         <p>© 2026 Gada Group | כל הזכויות שמורות לסטס זולין</p>
-        <p class="mt-1 opacity-50 italic">Protected System v2.0</p>
+        <p class="mt-1 opacity-50 italic">Protected System v2.1</p>
     </footer>
 
     <script>
@@ -45,31 +45,49 @@
             { name: "MG (איציק)", plate: "874-99-903", test: "05.08.26", ins: "31.07.26", interval: 15000 }
         ];
 
-        async function updateView() {
+        async function renderFleet(reports = []) {
+            const list = document.getElementById('fleet-list');
+            list.innerHTML = '';
+
+            staticFleet.forEach(v => {
+                const last = reports.find(r => r.car_number.replace(/-/g,'') === v.plate.replace(/-/g,''));
+                const currentKm = last ? Number(last.km) : 0;
+                let nextSrv = Math.ceil((currentKm + 1) / v.interval) * v.interval;
+                if (currentKm === 0) nextSrv = v.interval;
+                let srvTxt = nextSrv.toLocaleString();
+                if (v.type === "renault") srvTxt += (nextSrv/15000)%2===0 ? " (גד)" : " (קט)";
+
+                const card = document.createElement('div');
+                card.className = `card ${v.test.includes('.04.26') ? 'border-r-4 border-red-500' : ''}`;
+                card.innerHTML = `
+                    <div class="text-right px-1">
+                        <h3 class="font-bold text-white text-base leading-tight">${v.name}</h3>
+                        <p class="text-[9px] text-slate-500 font-mono tracking-tighter">${v.plate}</p>
+                    </div>
+                    <div class="data-row">
+                        <div><p class="lbl">ק"מ</p><p class="val text-blue-400 font-black italic">${currentKm > 0 ? currentKm.toLocaleString() : '---'}</p></div>
+                        <div><p class="lbl">טסט</p><p class="val">${v.test}</p></div>
+                        <div><p class="lbl">ביטוח</p><p class="val">${v.ins}</p></div>
+                        <div><p class="lbl">טיפול</p><p class="val text-green-400">${srvTxt}</p></div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        async function updateData() {
             try {
                 const res = await fetch('https://sheetdb.io/api/v1/yzlhwfcvmfebt');
                 const reports = await res.json();
-                const list = document.getElementById('fleet-list');
-                list.innerHTML = '';
+                renderFleet(reports);
+            } catch (e) {
+                console.log("Using static data only");
+                renderFleet(); // מציג את הצי גם בלי הדיווחים מה-API
+            }
+        }
 
-                staticFleet.forEach(v => {
-                    const last = reports.filter(r => r.car_number.replace(/-/g,'') === v.plate.replace(/-/g,'')).pop();
-                    const currentKm = last ? Number(last.km) : 0;
-                    let nextSrv = Math.ceil((currentKm + 1) / v.interval) * v.interval;
-                    if (currentKm === 0) nextSrv = v.interval;
-                    let srvTxt = nextSrv.toLocaleString();
-                    if (v.type === "renault") srvTxt += (nextSrv/15000)%2===0 ? " (גד)" : " (קט)";
-
-                    const card = document.createElement('div');
-                    card.className = `card ${v.test.includes('.04.26') ? 'border-r-4 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : ''}`;
-                    card.innerHTML = `
-                        <div class="flex justify-between items-center px-1">
-                            <div class="text-right">
-                                <h3 class="font-bold text-white text-base leading-tight">${v.name}</h3>
-                                <p class="text-[9px] text-slate-500 font-mono tracking-tighter">${v.plate}</p>
-                            </div>
-                        </div>
-                        <div class="data-row">
-                            <div><p class="lbl">ק"מ</p><p class="val text-blue-400 font-black italic">${currentKm > 0 ? currentKm.toLocaleString() : '---'}</p></div>
-                            <div><p class="lbl">טסט</p><p class="val">${v.test}</p
-                            
+        updateData();
+        setInterval(updateData, 60000);
+    </script>
+</body>
+</html>
