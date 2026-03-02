@@ -3,39 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ניהול צי רכב - גדא י.קרן בע"מ</title>
+    <title>דיווח נהג - גדא י.קרן בע"מ</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #0a0f1d; color: #e2e8f0; font-family: system-ui, sans-serif; }
-        .gold-accent { color: #d4af37; }
-        .premium-card { background: #161e2d; border: 1px solid #1e293b; }
-    </style>
 </head>
-<body class="p-4 md:p-10 text-right">
-    <header class="text-center mb-10">
-        <img src="https://raw.githubusercontent.com/staszulin/Gada-grup/main/1000304741.jpg" alt="Gada Group Logo" class="mx-auto h-32 mb-6 rounded-xl shadow-lg border border-yellow-600/30">
+<body class="bg-slate-900 text-white p-4 md:p-8 text-right">
+    <div class="max-w-md mx-auto bg-slate-800 p-6 rounded-3xl border-2 border-yellow-600 shadow-2xl text-center">
+        <img src="1000304741.jpg" alt="Gada Group Logo" class="mx-auto h-24 mb-4 rounded-lg shadow-md">
         
-        <h1 class="text-4xl font-extrabold gold-accent mb-2">גדא י.קרן בע"מ</h1>
-        <p class="text-slate-400 font-bold text-lg italic">ניהול צי רכב - סטס זולין</p>
-    </header>
+        <h1 class="text-2xl font-bold text-yellow-500 mb-2">גדא י.קרן בע"מ</h1>
+        <p class="text-slate-400 mb-6">דיווח קילומטראז' שבועי</p>
 
-    <main class="max-w-6xl mx-auto">
-        <div class="premium-card p-6 rounded-3xl shadow-2xl overflow-x-auto border-t-4 border-yellow-600">
-            <table class="w-full text-right border-collapse">
-                <thead>
-                    <tr class="text-slate-500 border-b border-slate-800 uppercase text-xs">
-                        <th class="p-4">רכב / נהג</th>
-                        <th class="p-4">מספר רכב</th>
-                        <th class="p-4">טסט</th>
-                        <th class="p-4">ק"מ נוכחי</th>
-                        <th class="p-4 text-center">סטטוס</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-800 text-sm">
-                    <tr class="hover:bg-slate-800/50 transition-colors"><td class="p-4 font-bold">משאית איסוזו סומו</td><td class="p-4">401-31-703</td><td class="p-4">-</td><td class="p-4">-</td><td class="p-4 text-center"><span class="bg-green-900/30 text-green-500 px-3 py-1 rounded-full text-xs">פעיל</span></td></tr>
-                    </tbody>
-            </table>
-        </div>
-    </main>
+        <form id="driverForm" class="space-y-4 text-right">
+            <div>
+                <label class="block text-sm mb-1 mr-1">שם הנהג</label>
+                <input type="text" name="driver_name" required class="w-full p-3 rounded-xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right">
+            </div>
+            <div>
+                <label class="block text-sm mb-1 mr-1">מספר רכב</label>
+                <input type="text" name="car_number" required class="w-full p-3 rounded-xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right">
+            </div>
+            <div>
+                <label class="block text-sm mb-1 mr-1">קילומטראז' עדכני</label>
+                <input type="number" name="km" required class="w-full p-3 rounded-xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right">
+            </div>
+            <button type="submit" class="w-full bg-yellow-600 text-black font-extrabold py-4 rounded-2xl hover:bg-yellow-500 transition-all shadow-lg text-lg">שלח דיווח לסטס</button>
+        </form>
+    </div>
 </body>
 </html>
