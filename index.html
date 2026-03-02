@@ -9,66 +9,49 @@
 <body class="bg-slate-900 text-white p-4 md:p-8 text-right">
     <div class="max-w-md mx-auto bg-slate-800 p-6 rounded-3xl border-2 border-yellow-600 shadow-2xl text-center">
         <div class="text-5xl font-black italic text-yellow-500 mb-2 uppercase tracking-tighter">Gada grup</div>
-        <div class="h-1 w-24 bg-yellow-600 mx-auto mb-6 rounded-full shadow-lg"></div>
-        
+        <div class="h-1 w-24 bg-yellow-600 mx-auto mb-6 rounded-full"></div>
         <h1 class="text-2xl font-bold mb-1">גדא י.קרן בע"מ</h1>
-        <p class="text-slate-400 mb-8 font-bold text-sm italic">דיווח קילומטראז' שבועי - סטס זולין</p>
+        <p class="text-slate-400 mb-8 font-bold text-sm italic">דיווח קילומטראז' - סטס זולין</p>
 
         <form id="sheetdb-form" class="space-y-4 text-right">
             <div>
-                <label class="block text-xs mb-1 mr-1 text-slate-300 font-bold">שם הנהג</label>
-                <input type="text" name="driver_name" required class="w-full p-4 rounded-2xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right shadow-inner">
+                <label class="block text-xs mb-1 mr-1 text-slate-300 font-bold text-right">שם הנהג</label>
+                <input type="text" name="data[driver_name]" required class="w-full p-4 rounded-2xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right">
             </div>
             <div>
-                <label class="block text-xs mb-1 mr-1 text-slate-300 font-bold">מספר רכב</label>
-                <input type="text" name="car_number" required class="w-full p-4 rounded-2xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right shadow-inner">
+                <label class="block text-xs mb-1 mr-1 text-slate-300 font-bold text-right">מספר רכב</label>
+                <input type="text" name="data[car_number]" required class="w-full p-4 rounded-2xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right">
             </div>
             <div>
-                <label class="block text-xs mb-1 mr-1 text-slate-300 font-bold">קילומטראז' עדכני</label>
-                <input type="number" name="km" required class="w-full p-4 rounded-2xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right shadow-inner">
+                <label class="block text-xs mb-1 mr-1 text-slate-300 font-bold text-right">קילומטראז' עדכני</label>
+                <input type="number" name="data[km]" required class="w-full p-4 rounded-2xl bg-slate-700 border border-slate-600 text-white outline-none focus:border-yellow-500 text-right">
             </div>
-            
-            <input type="hidden" name="date" id="current-date">
-
+            <input type="hidden" name="data[date]" id="current-date">
             <button type="submit" id="submit-btn" class="w-full bg-yellow-600 text-black font-black py-5 rounded-2xl hover:bg-yellow-500 transition-all text-xl shadow-xl mt-4 uppercase">שלח דיווח לסטס</button>
         </form>
-        
-        <div id="success-msg" class="mt-6 p-4 bg-green-900/30 text-green-400 rounded-xl border border-green-800 hidden font-bold">
-            הדיווח נשלח בהצלחה לסטס! שבוע טוב.
-        </div>
+        <div id="success-msg" class="mt-6 p-4 bg-green-900/30 text-green-400 rounded-xl border border-green-800 hidden font-bold">הדיווח נשלח בהצלחה לסטס!</div>
     </div>
 
     <script>
-        // מילוי תאריך אוטומטי
         document.getElementById('current-date').value = new Date().toLocaleDateString('he-IL');
-
         const form = document.getElementById('sheetdb-form');
-        const btn = document.getElementById('submit-btn');
-        const msg = document.getElementById('success-msg');
-
         form.addEventListener("submit", e => {
           e.preventDefault();
-          
-          // שינוי מצב כפתור בזמן שליחה
-          btn.innerText = "שולח נתונים...";
+          const btn = document.getElementById('submit-btn');
+          btn.innerText = "שולח...";
           btn.disabled = true;
-          btn.classList.add('opacity-50');
 
-          // שליחה לצינור של SheetDB
           fetch('https://sheetdb.io/api/v1/ws842wggxsxv', {
               method : 'POST',
               body: new FormData(form),
-          }).then(
-              response => response.json()
-          ).then((data) => {
-            console.log(data);
+          }).then(response => response.json())
+          .then(data => {
             form.classList.add('hidden');
-            msg.classList.remove('hidden');
+            document.getElementById('success-msg').classList.remove('hidden');
           }).catch(err => {
-            alert('קרתה שגיאה בשליחה. נסה שוב.');
-            btn.innerText = "שלח דיווח לסטס";
+            alert('שגיאה בשליחה');
             btn.disabled = false;
-            btn.classList.remove('opacity-50');
+            btn.innerText = "שלח דיווח לסטס";
           });
         });
     </script>
