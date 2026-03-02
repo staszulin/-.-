@@ -3,52 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gada Group - Pro Control</title>
+    <title>Gada Group - Control Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #020617; color: #f1f5f9; font-family: system-ui, sans-serif; }
-        .vehicle-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 1.5rem; margin-bottom: 1rem; }
-        .danger-card { border-right: 6px solid #ef4444; background: rgba(220, 38, 38, 0.1); }
-        .label { color: #94a3b8; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
-        .val { color: #f8fafc; font-weight: 700; font-size: 0.85rem; white-space: nowrap; }
-        .edit-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 50; align-items: center; justify-content: center; padding: 20px; }
+        body { background: #020617; color: #f1f5f9; font-family: system-ui, sans-serif; margin: 0; padding: 10px; }
+        .card { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; margin-bottom: 12px; padding: 15px; }
+        .grid-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; margin-top: 10px; }
+        .label { color: #94a3b8; font-size: 10px; text-align: center; margin-bottom: 4px; }
+        .val { color: #f8fafc; font-size: 11px; font-weight: bold; text-align: center; white-space: nowrap; }
+        .danger { border-right: 5px solid #ef4444; }
     </style>
 </head>
-<body class="p-4 min-h-screen">
-    <header class="text-center mb-8">
-        <div class="text-5xl font-black italic text-yellow-500 uppercase tracking-tighter shadow-2xl">GADA GRUP</div>
-        <div class="h-1 w-20 bg-yellow-600 mx-auto mt-2 rounded-full"></div>
+<body>
+    <header class="text-center mb-6">
+        <div class="text-4xl font-black italic text-yellow-500 uppercase">GADA GRUP</div>
+        <div class="h-1 w-20 bg-yellow-600 mx-auto mt-1 rounded-full"></div>
     </header>
 
-    <div id="fleet-container" class="max-w-md mx-auto">
-        <p class="text-center text-slate-500 animate-pulse">מסנכרן צי רכב...</p>
-    </div>
-
-    <div id="editModal" class="edit-modal">
-        <div class="bg-slate-800 p-6 rounded-3xl w-full max-w-sm border border-yellow-600 shadow-2xl">
-            <h2 id="modalTitle" class="text-xl font-bold text-yellow-500 mb-4 text-center">עריכת רכב</h2>
-            <div class="space-y-4">
-                <div><label class="block text-xs text-slate-400 mb-1">תוקף טסט</label>
-                <input type="text" id="editTest" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white text-center"></div>
-                <div><label class="block text-xs text-slate-400 mb-1">תוקף ביטוח</label>
-                <input type="text" id="editIns" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white text-center"></div>
-            </div>
-            <div class="flex gap-3 mt-6">
-                <button onclick="saveEdit()" class="flex-1 bg-yellow-600 text-black font-black py-3 rounded-xl">שמור שינויים</button>
-                <button onclick="closeModal()" class="flex-1 bg-slate-700 text-white font-bold py-3 rounded-xl">ביטול</button>
-            </div>
-            <p class="text-[9px] text-slate-500 mt-4 text-center italic">* שינויים אלו נשמרים מקומית בדפדפן שלך.</p>
-        </div>
+    <div id="fleet-container">
+        <p class="text-center text-slate-500 animate-pulse">טוען נתונים...</p>
     </div>
 
     <script>
-        let currentVehicleIndex = null;
-        let fleet = JSON.parse(localStorage.getItem('gada_fleet')) || [
+        // הנתונים שלך - מעודכנים להיום
+        const staticFleet = [
             { name: "משאית איסוזו סומו", plate: "401-31-703", test: "01.12.26", ins: "01.12.26", interval: 25000 },
             { name: "יונדאי (פרנסואה)", plate: "887-91-401", test: "15.01.27", ins: "01.01.27", interval: 15000 },
             { name: "רנו קופה (בר)", plate: "766-66-903", test: "26.05.26", ins: "01.06.26", interval: 15000, type: "renault" },
             { name: "צ'רי (יצחק)", plate: "507-34-303", test: "07.12.26", ins: "01.12.26", interval: 15000 },
             { name: "צ'רי (ליאור)", plate: "507-34-404", test: "07.12.26", ins: "01.12.26", interval: 15000 },
             { name: "מג'י (דורון)", plate: "206-00-003", test: "09.04.26", ins: "01.04.26", interval: 10000 },
-            { name: "אופנוע (יניב)", plate: "529-42-103", test: "10.10.26", ins: "01.10.26", interval: 600
-             
+            { name: "אופנוע (יניב)", plate: "529-42-103", test: "10.10.26", ins: "01.10.26", interval: 6000 },
+            { name: "רנו קופה (נועם)", plate: "768-60-101", test: "02.07.26", ins: "01.07.26", interval: 15000, type: "renault" },
+            { name: "i10 (אריאל)", plate: "735-10-201", test: "20.07.26", ins: "01.07.26", interval: 15000 },
+            { name: "MG (איציק)", plate: "874-99-903", test: "05.08.26", ins: "31.07.26", interval: 15000 }
+        ];
+
+        async function loadData() {
+            try {
+                const res = await fetch('https://sheetdb.io/api/v1/yzlhwfcvmfebt');
+                const reports = await res.json();
+                const container = document.getElementById('fleet-container');
+                container.innerHTML = '';
+
+                staticFleet.forEach(v => {
+                    const last = reports.filter(r => r.car_number.replace(/-/g,'') === v.plate.replace(/-/g,'')).pop();
+                    const currentKm = last ? Number(last.km) : 0;
+                    
+                    // חישוב טיפול
+                    let nextSrv = Math.ceil((currentKm + 1) / v.interval) * v.interval;
+                    if (currentKm === 0) nextSrv = v.interval;
+                    let srvLabel = nextSrv.toLocaleString();
+                    if (v.type === "renault") srvLabel += (nextSrv/15000)%2===0 ? " (גד)" : " (קט)";
+
+                    const div = document.createElement('div');
+                    div.className = `card ${v.test.includes('.04') ? 'danger' : ''}`;
+                    div.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="text-right">
+                                <h3 class="font-bold text-white text-base">${v.name}</h3>
+                                <p class="text-[10px] text-slate-500 font-mono">${v.plate}</p>
+                            </div>
+                            <button onclick="alert('לעריכה: שנה את התאריך בקוד ב-GitHub')" class="text-[10px] bg-white/10 px-3 py-1 rounded-full text-slate-400">ערוך</button>
+                        </div>
+                        <div class="grid-row">
+                            <div><p class="label">ק"מ</p><p class="val text-blue-400">${currentKm > 0 ? currentKm.toLocaleString() : '---'}</p></div>
+                            <div><p class="label">טסט</p><p class="val">${v.test}</p></div>
+                            <div><p class="label">ביטוח</p><p class="val">${v.ins}</p></div>
+                            <div><p class="label">טיפול</p><p class="val text-green-400">${srvLabel}</p></div>
+                        </div>
+                    `;
+                    container.
+                        
